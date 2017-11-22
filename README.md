@@ -16,7 +16,7 @@ I finally got sick enough of these issues that I decided to write my own.
 ### Usage
 
 Running "python LDIFtoCSV.py" should give you the usage text.
-
+```
 usage: LDIFtoCSV.py [options] 
 
 -o <filename> : File to write output. By default this is set to sys.stdout
@@ -24,6 +24,7 @@ usage: LDIFtoCSV.py [options]
 -F <char> : Character to separate the fields by. By default this is a comma. i.e. -F","
 -D <char> : Character to delimit the text value by. By default this is a double quote. i.e. -D"""
 -M <num> : The maximum number of columns a multivalued attribute should take up (default: 5). This is common with the objectClass attribute where it can have over 20 values. Do you want to have 20 columns each with the same heading objectClass or do you want to limit it.
+```
 
 Here are some common command lines that I use (assuming you have a test.ldif):
 
