@@ -52,7 +52,8 @@ dn: cn=Bill\, Kim and Family,mail=abc@example.com
 # One of the issues with this is that a lot of spreadsheet programs will only support
 # a maximum number of columns. Suppose a multivalued attribute had 200 or so values.
 # This would eat up 200 columns. OpenOffice's maximum number of columns is 1024.
-
+
+
 # A handler that simply throws away any logging messages sent to it
 class NullHandler(logging.Handler):
   def emit(self,record):
@@ -131,23 +132,30 @@ class LDIFCSVParser(LDIFParser):
           if( i < len(entry[attributeName])):
 
             if( self.check_printable(entry[attributeName][i]) ):
-              self.defaultOutput.write(self.textDelimiter + entry[attributeName][i] + self.textDelimiter + self.fieldSeparatorCharacter)
+              self.defaultOutput.write(self.textDelimiter + entry[attributeName][i] + self.textDelimiter)
             else:
-              self.defaultOutput.write(self.textDelimiter + repr(entry[attributeName][i]) + self.textDelimiter + self.fieldSeparatorCharacter)
+              self.defaultOutput.write(self.textDelimiter + repr(entry[attributeName][i]) + self.textDelimiter)
           else:
-            self.defaultOutput.write(self.textDelimiter + self.textDelimiter + self.fieldSeparatorCharacter)
+            self.defaultOutput.write(self.textDelimiter + self.textDelimiter)
+
+          if attributeName != allAttributeNames[-1]:
+            self.defaultOutput.write(self.fieldSeparatorCharacter)
 
           i = i + 1
 
       # If the attribute name is dn, print the fully qualified distinguished name
       elif(attributeName == "dn"):
-        self.defaultOutput.write(self.textDelimiter + str(dn) + self.textDelimiter + self.fieldSeparatorCharacter)
+        #self.defaultOutput.write(self.textDelimiter + str(dn) + self.textDelimiter + self.fieldSeparatorCharacter)
+        self.defaultOutput.write(self.textDelimiter + str("splitted") + self.textDelimiter + self.fieldSeparatorCharacter)
 
       # If the attribute name is not in the entry print fieldSeparatorCharacter(s)
       else:
         i = 0
         while( i < numberOfTimesToPrint ):
-          self.defaultOutput.write(self.textDelimiter + self.textDelimiter + self.fieldSeparatorCharacter)
+          self.defaultOutput.write(self.textDelimiter + self.textDelimiter)
+
+          if attributeName != allAttributeNames[-1]:
+            self.defaultOutput.write(self.fieldSeparatorCharacter)
           i = i + 1
 
     # Print a newline
@@ -214,7 +222,9 @@ def generateCSV(attributeDictionary, filename, output, fieldSeparatorCharacter =
 
     i = 0
     while(i < numberOfTimesToPrint):
-      output.write(textDelimiter + columnName + textDelimiter + fieldSeparatorCharacter)
+      output.write(textDelimiter + columnName + textDelimiter)
+      if columnName != headerValues[-1]:
+        output.write(fieldSeparatorCharacter)
       numberOfColumns = numberOfColumns + 1
       i = i + 1
 
@@ -225,7 +235,7 @@ def generateCSV(attributeDictionary, filename, output, fieldSeparatorCharacter =
   CSVParser.parse()
 
   # Write a newline to end the file
-  output.write("\n")
+  #output.write("\n")
 
 def setupLogging(logfilename=""):
   # Create the primaryLogger as a global variable
@@ -275,7 +285,7 @@ def usage():
   sys.stdout.write("\t\t  Do you want to have 20 columns each with the same heading objectClass or do you want to limit it.\n") 
   
   sys.stdout.write("\n")
-  """
+  """
 
 # Primary function call 
 def main():

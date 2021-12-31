@@ -354,22 +354,35 @@ class LDIFParser:
 
       while attr_type!=None and attr_value!=None:
         if attr_type=='dn':
+          dn_list = attr_value.split(',')
+          for dn_item in dn_list:
+            kv = dn_item.split('=')
+            if(kv[0] == 'o' or kv[0] == 'ds' ):
+              dn_key = "dn-{}-{}".format(kv[0],kv[1])
+              dn_value = kv[1]
+            else:
+              dn_key = "dn-{}".format(kv[0])
+              dn_value = kv[1]
+            if entry.has_key(dn_key):
+              entry[dn_key].append(dn_value)
+            else:
+              entry[dn_key]=[dn_value]
           # attr type and value pair was DN of LDIF record
           if dn!=None:
-	    raise ValueError, 'Two lines starting with dn: in one record.'
+            raise ValueError, 'Two lines starting with dn: in one record.'
           if not is_dn(attr_value):
-	    raise ValueError, 'No valid string-representation of distinguished name %s.' % (repr(attr_value))
+            raise ValueError, 'No valid string-representation of distinguished name %s.' % (repr(attr_value))
           dn = attr_value
         elif attr_type=='version' and dn is None:
           version = 1
         elif attr_type=='changetype':
           # attr type and value pair was DN of LDIF record
           if dn is None:
-	    raise ValueError, 'Read changetype: before getting valid dn: line.'
+            raise ValueError, 'Read changetype: before getting valid dn: line.'
           if changetype!=None:
-	    raise ValueError, 'Two lines starting with changetype: in one record.'
+            raise ValueError, 'Two lines starting with changetype: in one record.'
           if not valid_changetype_dict.has_key(attr_value):
-	    raise ValueError, 'changetype value %s is invalid.' % (repr(attr_value))
+            raise ValueError, 'changetype value %s is invalid.' % (repr(attr_value))
           changetype = attr_value
         elif attr_value!=None and \
              not self._ignored_attr_types.has_key(attr_type.lower()):
