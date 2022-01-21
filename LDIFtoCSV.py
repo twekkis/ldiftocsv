@@ -79,7 +79,7 @@ class LDIFAttributeParser(LDIFParser):
     self.attributeDictionary["dn"] = 1
 
     # Loop through each of the attribute names
-    for attributeName in entry.keys():
+    for attributeName in list(entry.keys()):
       
       # Add the name to the dictionary if it is not already there. Set the value to the cardinality of the
       # of the attribute (the number of values that the attribute has)
@@ -111,7 +111,7 @@ class LDIFCSVParser(LDIFParser):
   def handle(self, dn, entry):
 
     # Get a list of all the attributes in the entire LDIF and sort them
-    allAttributeNames = self.attributeDictionary.keys()
+    allAttributeNames = list(self.attributeDictionary.keys())
     allAttributeNames.sort()
 
     # Loop through each of the attributes
@@ -133,34 +133,34 @@ class LDIFCSVParser(LDIFParser):
           if( i < len(entry[attributeName])):
 
             if( self.check_printable(entry[attributeName][i]) ):
-              self.defaultOutput.write(self.textDelimiter + entry[attributeName][i] + self.textDelimiter)
+              self.defaultOutput.write(bytes(self.textDelimiter + entry[attributeName][i] + self.textDelimiter, "utf-8"))
             else:
-              self.defaultOutput.write(self.textDelimiter + repr(entry[attributeName][i]) + self.textDelimiter)
+              self.defaultOutput.write(bytes(self.textDelimiter + repr(entry[attributeName][i]) + self.textDelimiter, "utf-8"))
           else:
-            self.defaultOutput.write(self.textDelimiter + self.textDelimiter)
+            self.defaultOutput.write(bytes(self.textDelimiter + self.textDelimiter, "utf-8"))
 
           if attributeName != allAttributeNames[-1]:
-            self.defaultOutput.write(self.fieldSeparatorCharacter)
+            self.defaultOutput.write(bytes(self.fieldSeparatorCharacter, "utf-8"))
 
           i = i + 1
 
       # If the attribute name is dn, print the fully qualified distinguished name
       elif(attributeName == "dn"):
         #self.defaultOutput.write(self.textDelimiter + str(dn) + self.textDelimiter + self.fieldSeparatorCharacter)
-        self.defaultOutput.write(self.textDelimiter + str("splitted") + self.textDelimiter + self.fieldSeparatorCharacter)
+        self.defaultOutput.write(bytes(self.textDelimiter + str("splitted") + self.textDelimiter + self.fieldSeparatorCharacter, "utf-8"))
 
       # If the attribute name is not in the entry print fieldSeparatorCharacter(s)
       else:
         i = 0
         while( i < numberOfTimesToPrint ):
-          self.defaultOutput.write(self.textDelimiter + self.textDelimiter)
+          self.defaultOutput.write(bytes(self.textDelimiter + self.textDelimiter, "utf-8"))
 
           if attributeName != allAttributeNames[-1]:
-            self.defaultOutput.write(self.fieldSeparatorCharacter)
+            self.defaultOutput.write(bytes(self.fieldSeparatorCharacter, "utf-8"))
           i = i + 1
 
     # Print a newline
-    self.defaultOutput.write("\n")
+    self.defaultOutput.write(bytes("\n", "utf-8"))
 
   def check_printable(self, message):
     for char in message:
@@ -208,7 +208,7 @@ def generateCSV(attributeDictionary, filename, output, fieldSeparatorCharacter =
   CSVParser.maximumColumns = maximumColumns
   
   # Print out the CSV header sorted
-  headerValues = attributeDictionary.keys()
+  headerValues = list(attributeDictionary.keys())
   headerValues.sort()
 
   # Count of the number of columns this CSV will have
@@ -223,14 +223,14 @@ def generateCSV(attributeDictionary, filename, output, fieldSeparatorCharacter =
 
     i = 0
     while(i < numberOfTimesToPrint):
-      output.write(textDelimiter + columnName + textDelimiter)
+      output.write(bytes(textDelimiter + columnName + textDelimiter, "utf-8"))
       if columnName != headerValues[-1]:
-        output.write(fieldSeparatorCharacter)
+        output.write(bytes(fieldSeparatorCharacter, "utf-8"))
       numberOfColumns = numberOfColumns + 1
       i = i + 1
 
   # Write a newline after the header
-  output.write("\n")
+  output.write(bytes("\n", "utf-8"))
 
   # Print out the main CSV data
   CSVParser.parse()
@@ -303,13 +303,13 @@ def main():
   # Use getopt to get all the options that might be present
   try:
     optionValueList, remainingItems  = getopt.getopt(sys.argv[1:], "o:l:F:D:M:")
-  except getopt.GetoptError, exceptionObject:
-    print str(exceptionObject)
+  except getopt.GetoptError as exceptionObject:
+    print(str(exceptionObject))
     usage()
     sys.exit(2)
 
   if( len(remainingItems) < 1 ):
-    print "Error: Expecting single filename argument at end of command line.\n"
+    print("Error: Expecting single filename argument at end of command line.\n")
     usage()
     sys.exit(2)
 
