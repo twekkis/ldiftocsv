@@ -20,6 +20,7 @@ import os
 import sys
 import getopt
 import logging
+import gzip 
 
 from ldif import LDIFParser, LDIFWriter
 import string
@@ -172,7 +173,7 @@ class LDIFCSVParser(LDIFParser):
 # are in the file. Returns a dictionary of attributes and the maximum number of times that value appears.
 def parseLDIFAttributes(filename):
   # Open the LDIF file for reading
-  LDIFFile = open(filename,"rb")
+  LDIFFile = gzip.open(filename,"rb")
   primaryLogger.debug("Opened <%s> for reading" % filename)
 
   # Create an instance of the attribute parser which will handle LDIF entries
@@ -197,7 +198,7 @@ def parseLDIFAttributes(filename):
   
 def generateCSV(attributeDictionary, filename, output, fieldSeparatorCharacter = ",", textDelimiter = "\"", maximumColumns = 5 ):
   # Open the LDIF file for reading
-  LDIFFile = open(filename,"rb")
+  LDIFFile = gzip.open(filename,"rb")
   primaryLogger.debug("Opened <%s> for reading" % filename)
 
   # Create an instance of the attribute parser which will handle LDIF entries
@@ -350,7 +351,7 @@ def main():
   output = sys.stdout
 
   if( outputFilename != "" ):
-    output = open(outputFilename,"w")
+    output = gzip.open(outputFilename,"w")
 
   # Second pass generates the actual CSV
   generateCSV(attributeDictionary, remainingItems[0], output,fieldSeparatorCharacter,textDelimiter,maximumColumns)
